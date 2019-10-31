@@ -53,4 +53,54 @@ class ArraysTest extends TestCase
             )
         );
     }
+
+    /**
+     * @dataProvider uniqueDataProvider
+     *
+     * @param array $input
+     * @param array $expected
+     */
+    public function testUnique(array $input, array $expected)
+    {
+        $this->assertEquals($expected, Arrays::unique(...$input));
+    }
+
+    public function uniqueDataProvider(): array
+    {
+        return [
+            'Basic' => [
+                [
+                    [
+                        'Foo',
+                        'Bar',
+                        'foO',
+                        'Bam',
+                        'BAM'
+                    ]
+                ],
+                [
+                    'Foo',
+                    'Bar',
+                    'Bam'
+                ]
+            ],
+            'Lowercased' => [
+                [
+                    [
+                        'Foo',
+                        'Bar',
+                        'foO',
+                        'Bam',
+                        'BAM'
+                    ],
+                    true
+                ],
+                [
+                    'foo',
+                    'bar',
+                    'bam'
+                ]
+            ]
+        ];
+    }
 }

@@ -1,18 +1,18 @@
 {
-    "name": "futape/array-utility",
-    "description": "",
-    "type": "library",
-    "license": "MIT",
-    "require": {
-      "php": "^7.2",
-      "ext-mbstring": "*"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^8.4"
-    },
-    "autoload": {
-      "psr-4": {
-        "Futape\\Utility\\ArrayUtility\\": "src/"
-      }
+  "name": "futape/array-utility",
+  "description": "A library of array utilities",
+  "type": "library",
+  "license": "MIT",
+  "require": {
+    "php": "~7.2.0",
+    "ext-mbstring": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^8.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "Futape\\Utility\\ArrayUtility\\": "src/"
     }
+  }
 }

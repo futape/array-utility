@@ -7,6 +7,38 @@ namespace Futape\Utility\ArrayUtility;
 abstract class Arrays
 {
     /**
+     * Compare values strictly
+     *
+     * @var int
+     */
+    const UNIQUE_STRICT = 1 << 8;
+
+    /**
+     * Convert array items to strings and compare as strings
+     *
+     * @var int
+     */
+    const UNIQUE_STRING = 1 << 9;
+
+    /**
+     * Ignore case when comparing strings.
+     *
+     * Only relevant if `self::UNIQUE_STRING` is active.
+     *
+     * @var int
+     */
+    const UNIQUE_IGNORE_CASE = 1 << 10;
+
+    /**
+     * Ignore case by converting all strings to lowercase.
+     *
+     * Only relevant if `self::UNIQUE_STRING` is active.
+     *
+     * @var int
+     */
+    const UNIQUE_LOWERCASE = 1 << 11;
+
+    /**
      * @param array $value
      * @param bool $withKeys
      * @return array
@@ -30,28 +62,60 @@ abstract class Arrays
     }
 
     /**
-     * Makes an array of strings contain unique values only (case-insensitive)
+     * Makes an array contain unique values only
      *
-     * The first occurrence of a string is kept.
+     * When duplicates are found, the first one is kept.
+     * Unlike `array_unique()` this function doesn't preserve keys and returns an indexed array instead.
+     * See documentation on `self::UNIQUE_*` constants for more information.
+     * If non of these constants' values is contained in the passed bitmask, it is forwarded to PHP's `array_unique()`
+     * function.
      *
-     * @param string[] $value
-     * @param bool $lowercase If set to true, all strings get lowercased
-     * @return string[]
+     * @param array $value
+     * @param int $options A bitmask of `self::UNIQUE_*` constants or `SORT_*` constants passed to `array_unique()`
+     * @return array
      */
-    public static function unique(array $value, bool $lowercase = false): array
+    public static function unique(array $value, int $options = self::UNIQUE_STRING | self::UNIQUE_IGNORE_CASE): array
     {
-        if ($lowercase) {
-            $unique = array_unique(array_map('mb_strtolower', $value));
-        } else {
-            $unique = [];
+        switch (true) {
+            case ($options & self::UNIQUE_STRICT):
+                $unique = [];
 
-            foreach ($value as $val) {
-                if (!isset($unique[mb_strtolower($val)])) {
-                    $unique[mb_strtolower($val)] = $val;
+                foreach ($value as $val) {
+                    if (!in_array($val, $unique, true)) {
+                        $unique[] = $val;
+                    }
                 }
-            }
-        }
 
-        return array_values($unique);
+                return $unique;
+
+            case ($options & self::UNIQUE_STRING):
+                array_walk(
+                    $value,
+                    function (&$val) {
+                        $val = (string)$val;
+                    }
+                );
+
+                if ($options & self::UNIQUE_LOWERCASE) {
+                    return array_values(array_unique(array_map('mb_strtolower', $value)));
+                }
+
+                if ($options & self::UNIQUE_IGNORE_CASE) {
+                    $unique = [];
+
+                    foreach ($value as $val) {
+                        if (!isset($unique[mb_strtolower($val)])) {
+                            $unique[mb_strtolower($val)] = $val;
+                        }
+                    }
+
+                    return array_values($unique);
+                }
+
+                return array_values(array_unique($value));
+
+            default:
+                return array_values(array_unique($value, $options));
+        }
     }
 }

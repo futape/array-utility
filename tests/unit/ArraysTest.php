@@ -68,7 +68,21 @@ class ArraysTest extends TestCase
     public function uniqueDataProvider(): array
     {
         return [
-            'Basic' => [
+            'String' => [
+                [
+                    [
+                        'Foo',
+                        'Bar',
+                        'foO',
+                        'Bar'
+                    ]
+                ],
+                [
+                    'Foo',
+                    'Bar'
+                ]
+            ],
+            'String, case-insensitive' => [
                 [
                     [
                         'Foo',
@@ -84,7 +98,7 @@ class ArraysTest extends TestCase
                     'Bam'
                 ]
             ],
-            'Lowercased' => [
+            'String, lowercased' => [
                 [
                     [
                         'Foo',
@@ -93,12 +107,50 @@ class ArraysTest extends TestCase
                         'Bam',
                         'BAM'
                     ],
-                    true
+                    Arrays::UNIQUE_STRING | Arrays::UNIQUE_LOWERCASE
                 ],
                 [
                     'foo',
                     'bar',
                     'bam'
+                ]
+            ],
+            'Strict' => [
+                [
+                    [
+                        '',
+                        null,
+                        false,
+                        0,
+                        '0',
+                        false
+                    ],
+                    Arrays::UNIQUE_STRICT
+                ],
+                [
+                    '',
+                    null,
+                    false,
+                    0,
+                    '0'
+                ]
+            ],
+            'Forwarding' => [
+                [
+                    [
+                        '0',
+                        0,
+                        false,
+                        '2',
+                        true,
+                        1
+                    ],
+                    SORT_NUMERIC
+                ],
+                [
+                    0,
+                    2,
+                    1
                 ]
             ]
         ];
